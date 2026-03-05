@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password12345
+      - DOCKER_INFLUXDB_INIT_ORG=sentinel_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=telemetry_bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
+    networks:
+      - sentinel-net
+
+  ingestion-server:
+    build: ./services/ingestion-server
+    ports:
+      - "4000:4000"
+    environment:
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_TOKEN=my-super-secret-token
+      - INFLUX_ORG=sentinel_org
+      - INFLUX_BUCKET=telemetry_bucket
+      - PORT=4000 # This needs to match the exposed port in Dockerfile
+    depends_on:
+      - influxdb
+    networks:
+      - sentinel-net
+
+  telemetry-producer:
+    build: ./services/telemetry-producer
+    environment:
+      - SERVER_URL=ws://ingestion-server:4000 # Use ws:// for WebSocket protocol
+      - TICK_RATE_MS=500 # Send data every 500ms
+      - HOST_ID_PREFIX=node # To distinguish producers
+    depends_on:
+      - ingestion-server
+    networks:
+      - sentinel-net
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  influxdb-data:

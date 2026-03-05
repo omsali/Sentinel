@@ -1,0 +1,28 @@
+# Dependency directories
+node_modules/
+**/node_modules/
+# */node_modules/
+
+# Build outputs
+dist/
+**/dist/
+
+# Env & secrets
+.env
+.env.*
+
+# Logs & diagnostics
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Editor/OS artifacts
+.DS_Store
+.vscode/
+.idea/
+
+# Tool caches
+.eslintcache
+.turbo
+.parcel-cache
+.vite
