@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. The Time-Series Database
   influxdb:
     image: influxdb:2.7
     ports:
@@ -16,7 +17,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
     networks:
       - sentinel-net
-
+  # 2. The Backend (Ingestion)
   ingestion-server:
     build: ./services/ingestion-server
     ports:
@@ -31,7 +32,7 @@ services:
       - influxdb
     networks:
       - sentinel-net
-
+  # 3. The Data Generator (Producer)
   telemetry-producer:
     build: ./services/telemetry-producer
     environment:
