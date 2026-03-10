@@ -16,7 +16,7 @@ export const config = {
     maxRetries: 3,
     maxBufferLines: 5000, // Max points to buffer before dropping
     exponentialBase: 2,
-    rateLimiting: 2000, // ms
+    // rateLimiting: 2000, // ms
   },
   // Server-side alerting thresholds
   alertThresholds: {

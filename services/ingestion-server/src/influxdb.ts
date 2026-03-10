@@ -10,7 +10,14 @@ if (!url || !token || !org || !bucket) {
 }
 
 const influxDB = new InfluxDB({ url, token });
-const writeApi: WriteApi = influxDB.getWriteApi(org, bucket, config.influxWriteOptions as any);
+// const writeApi: WriteApi = influxDB.getWriteApi(org, bucket, 'ms' config.influxWriteOptions as any);
+const writeApi = influxDB.getWriteApi(org, bucket, undefined, {
+  ...config.influxWriteOptions,
+  writeFailed: (error, lines) => {
+    console.error('InfluxDB write failed:', error, 'lines:', lines.length);
+  },
+});
+
 
 // Log any errors from the InfluxDB write client (Note: 'on' method is not directly available on WriteApi in current client versions)
 // influxDB.getWriteApi(org, bucket, config.influxWriteOptions as any).on('writeError', (error: Error) => {
